@@ -21,7 +21,7 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const bookingRouter = require("./routes/booking.js");
 
-const dbUrl = process.env.LOCALDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
+const dbUrl = process.env.ATLASDB_URL || process.env.LOCALDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
 
 // View engine setup
 app.set("view engine", "ejs");
@@ -56,57 +56,58 @@ const sessionOptions = {
 async function main() {
     try {
         await mongoose.connect(dbUrl);
-        console.log("Connected to Local DB");
+        console.log("Connected to DB");
     } catch (err) {
-        console.log("Local DB connection error:", err);
-        process.exit(1);
+        console.log("DB connection error:", err);
     }
 }
 
-main().then(() => {
-    app.use(session(sessionOptions));
-    app.use(flash());
+main();
 
-    app.use(passport.initialize());
-    app.use(passport.session());
-    passport.use(new LocalStrategy(User.authenticate()));
+app.use(session(sessionOptions));
+app.use(flash());
 
-    passport.serializeUser(User.serializeUser());
-    passport.deserializeUser(User.deserializeUser());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
 
-    app.use((req, res, next) => {
-        res.locals.success = req.flash("success");
-        res.locals.error = req.flash("error");
-        res.locals.currUser = req.user;
-        next();
-    });
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-    // Routes
-    app.get("/", (req, res) => {
-    res.redirect("/listings");
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    res.locals.currUser = req.user;
+    next();
 });
 
-    app.use("/listings", listingRouter);
-    app.use("/listings/:id/reviews", reviewRouter);
-    app.use("/", userRouter);
-    app.use("/", bookingRouter);
-
-    // Static Pages
-    app.get("/privacy", (req, res) => res.render("pages/privacy.ejs"));
-    app.get("/terms", (req, res) => res.render("pages/terms.ejs"));
-    app.get("/contact", (req, res) => res.render("pages/contact.ejs"));
-
-    // Error Handling
-    app.use((req, res, next) => {
-        next(new ExpressError(404, "Page not found!"));
-    });
-
-    app.use((err, req, res, next) => {
-        const { statusCode = 500, message = "Something went wrong" } = err;
-        res.status(statusCode).render("error.ejs", { message });
-    });
-
-    app.listen(8080, () => {
-        console.log("server is listening to port 8080");
-    });
+// Routes
+app.get("/", (req, res) => {
+res.redirect("/listings");
 });
+
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", userRouter);
+app.use("/", bookingRouter);
+
+// Static Pages
+app.get("/privacy", (req, res) => res.render("pages/privacy.ejs"));
+app.get("/terms", (req, res) => res.render("pages/terms.ejs"));
+app.get("/contact", (req, res) => res.render("pages/contact.ejs"));
+
+// Error Handling
+app.use((req, res, next) => {
+    next(new ExpressError(404, "Page not found!"));
+});
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500, message = "Something went wrong" } = err;
+    res.status(statusCode).render("error.ejs", { message });
+});
+
+app.listen(8080, () => {
+    console.log("server is listening to port 8080");
+});
+
+module.exports = app;
