@@ -1,0 +1,88 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="max-w-7xl mx-auto px-4 mt-8 mb-20">
+    <div class="mb-10 border-b border-gray-100 dark:border-gray-800 pb-6">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white">My Trips</h2>
+        <p class="text-gray-500 dark:text-gray-400 mt-1">Upcoming and past stays.</p>
+    </div>
+
+    <% if (bookings && bookings.length > 0) { %>
+        <div class="space-y-8">
+            <% for(let booking of bookings) { %>
+            <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-2xl">
+                <!-- Listing Image -->
+                <div class="w-full md:w-80 h-64 md:h-auto overflow-hidden">
+                    <img src="<%= booking.listing.image.url %>" class="w-full h-full object-cover" alt="">
+                </div>
+                
+                <!-- Booking Details -->
+                <div class="flex-1 p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white"><%= booking.listing.title %></h3>
+                                <p class="text-gray-500 dark:text-gray-400 font-medium"><%= booking.listing.location %>, <%= booking.listing.country %></p>
+                            </div>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-[10px] font-bold uppercase text-gray-500">
+                            <%= booking.checkIn.toLocaleDateString() %> - <%= booking.checkOut.toLocaleDateString() %>
+                        </span>
+                        <% if (booking.status === 'pending') { %>
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-[10px] font-bold uppercase">Waiting for Approval</span>
+                        <% } else if (booking.status === 'confirmed') { %>
+                            <span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[10px] font-bold uppercase">Confirmed</span>
+                        <% } else { %>
+                            <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-[10px] font-bold uppercase">Rejected</span>
+                        <% } %>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                        <span class="font-bold text-gray-800 dark:text-white">₹<%= booking.totalPrice.toLocaleString("en-IN") %></span>
+                        <% if (booking.status === 'pending') { %>
+                            <form action="/bookings/<%= booking._id %>?_method=DELETE" method="POST">
+                                <button class="text-sm font-bold text-red-500 hover:underline">Cancel Request</button>
+                            </form>
+                        <% } %>
+                    </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 py-6 border-y border-gray-50 dark:border-gray-700">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Check-in</p>
+                                <p class="font-bold text-gray-800 dark:text-gray-200"><%= booking.checkIn.toDateString() %></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Checkout</p>
+                                <p class="font-bold text-gray-800 dark:text-gray-200"><%= booking.checkOut.toDateString() %></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Guests</p>
+                                <p class="font-bold text-gray-800 dark:text-gray-200"><%= booking.guests %> Guest(s)</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Paid</p>
+                                <p class="font-bold text-primary">₹<%= booking.totalPrice.toLocaleString("en-IN") %></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex flex-wrap gap-4">
+                        <a href="/listings/<%= booking.listing._id %>" class="px-6 py-2.5 bg-gray-900 dark:bg-gray-700 text-white rounded-xl font-bold text-sm hover:bg-black dark:hover:bg-gray-600 transition-all no-underline">View Listing</a>
+                        <form method="POST" action="/bookings/<%= booking._id %>?_method=DELETE">
+                            <button class="px-6 py-2.5 border border-red-200 text-red-500 rounded-xl font-bold text-sm hover:bg-red-50 transition-all">Cancel Booking</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="text-center py-24 bg-gray-50 dark:bg-gray-800/30 rounded-[3rem] border border-dashed border-gray-200 dark:border-gray-700">
+            <div class="w-20 h-20 bg-white dark:bg-gray-800 text-gray-200 dark:text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+                <i class="fa-solid fa-suitcase-rolling text-4xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">No trips booked...yet!</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto">Time to dust off your bags and start planning your next adventure.</p>
+            <a href="/listings" class="inline-block bg-primary text-white px-10 py-3.5 rounded-2xl font-bold hover:bg-primaryHover transition-all shadow-xl no-underline transform hover:scale-105">Start Searching</a>
+        </div>
+    <% } %>
+</div>

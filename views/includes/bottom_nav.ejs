@@ -1,0 +1,46 @@
+<!-- Mobile Bottom Navigation (Airbnb Style) -->
+<div class="fixed bottom-0 left-0 right-0 z-[9999] md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+    <div class="flex justify-around items-center h-16 px-2">
+        <!-- Explore -->
+        <a href="/listings" class="flex flex-col items-center justify-center space-y-1 w-full no-underline transition-all active:scale-95">
+            <i class="fa-solid fa-magnifying-glass text-lg text-gray-400 dark:text-gray-500"></i>
+            <span class="text-[10px] font-bold text-gray-500">Explore</span>
+        </a>
+
+        <!-- Wishlist -->
+        <a href="/wishlist" class="flex flex-col items-center justify-center space-y-1 w-full no-underline transition-all active:scale-95">
+            <i class="fa-regular fa-heart text-lg text-gray-400 dark:text-gray-500"></i>
+            <span class="text-[10px] font-bold text-gray-500">Wishlist</span>
+        </a>
+
+        <!-- Trips -->
+        <a href="/bookings" class="flex flex-col items-center justify-center space-y-1 w-full no-underline transition-all active:scale-95">
+            <i class="fa-solid fa-suitcase text-lg text-gray-400 dark:text-gray-500"></i>
+            <span class="text-[10px] font-bold text-gray-500">Trips</span>
+        </a>
+
+        <!-- Profile -->
+        <a href="/profile" class="flex flex-col items-center justify-center space-y-1 w-full no-underline transition-all active:scale-95">
+            <% if (currUser) { %>
+                <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold shadow-sm overflow-hidden select-none">
+                    <% if (currUser.image && currUser.image.url && currUser.image.url !== "" && !currUser.image.url.includes("default_user_avatar")) { %>
+                        <img src="<%= currUser.image.url %>" class="w-full h-full object-cover" alt="">
+                    <% } else { %>
+                        <%= currUser.username.charAt(0).toUpperCase() %>
+                    <% } %>
+                </div>
+            <% } else { %>
+                <i class="fa-regular fa-circle-user text-lg text-gray-400 dark:text-gray-500"></i>
+            <% } %>
+            <span class="text-[10px] font-bold text-gray-500"><%= currUser ? 'Profile' : 'Log in' %></span>
+        </a>
+    </div>
+</div>
+
+<!-- Add padding to body on mobile to prevent footer being covered -->
+<style>
+    @media (max-width: 767px) {
+        body { padding-bottom: 70px !important; }
+    }
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+</style>

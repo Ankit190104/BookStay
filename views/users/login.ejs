@@ -1,0 +1,37 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="max-w-md mx-auto mt-16 mb-24 px-4">
+    <div class="bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-[2.5rem] shadow-2xl border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+        <div class="text-center mb-10">
+            <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-lock text-primary text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Welcome back</h2>
+            <p class="text-gray-500 dark:text-gray-400 mt-2 font-medium">Please enter your details to sign in.</p>
+        </div>
+
+        <form action="/login" method="POST" class="needs-validation space-y-6" novalidate>
+            <div>
+                <label for="username" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Username</label>
+                <div class="relative">
+                    <span class="absolute left-5 top-4 text-gray-400"><i class="fa-solid fa-user text-sm"></i></span>
+                    <input name="username" id="username" type="text" class="w-full pl-12 pr-5 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white placeholder:text-gray-400" placeholder="Enter your username" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                <div class="relative">
+                    <span class="absolute left-5 top-4 text-gray-400"><i class="fa-solid fa-key text-sm"></i></span>
+                    <input name="password" id="password" type="password" class="w-full pl-12 pr-5 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white placeholder:text-gray-400" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg hover:bg-primaryHover transition-all shadow-lg shadow-primary/20 transform active:scale-[0.98] mt-2">Sign In</button>
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-700 text-center">
+            <p class="text-gray-600 dark:text-gray-400 text-sm">Don't have an account? <a href="/signup" class="text-primary font-bold hover:underline">Sign up</a></p>
+        </div>
+    </div>
+</div>

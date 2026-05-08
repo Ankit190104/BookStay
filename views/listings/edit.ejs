@@ -1,0 +1,73 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="max-w-2xl mx-auto mt-8 mb-20 px-4">
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Edit Listing</h2>
+        <p class="text-gray-500 dark:text-gray-400 mb-8 font-medium">Update your place details.</p>
+        
+        <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation space-y-6" enctype="multipart/form-data">
+            <div>
+                <label for="title" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                <input name="listing[title]" value="<%= listing.title %>" type="text" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required />
+            </div>
+
+            <div>
+                <label for="description" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                <textarea name="listing[description]" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all h-32 dark:text-white" required><%= listing.description %></textarea>
+            </div>
+
+            <div class="mb-4">
+                <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Current Image</p>
+                <img src="<%= originalImageUrl %>" class="w-48 rounded-xl shadow-md border border-gray-200 dark:border-gray-700" alt="">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="image" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Change Image</label>
+                    <input name="listing[image]" type="file" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primaryHover dark:text-gray-400" />
+                </div>
+                <div>
+                    <label for="category" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                    <select name="listing[category]" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white">
+                        <option value="Trending" <%= listing.category === 'Trending' ? 'selected' : '' %>>Trending</option>
+                        <option value="Rooms" <%= listing.category === 'Rooms' ? 'selected' : '' %>>Rooms</option>
+                        <option value="Iconic Cities" <%= listing.category === 'Iconic Cities' ? 'selected' : '' %>>Iconic Cities</option>
+                        <option value="Mountains" <%= listing.category === 'Mountains' ? 'selected' : '' %>>Mountains</option>
+                        <option value="Castles" <%= listing.category === 'Castles' ? 'selected' : '' %>>Castles</option>
+                        <option value="Amazing Pools" <%= listing.category === 'Amazing Pools' ? 'selected' : '' %>>Amazing Pools</option>
+                        <option value="Camping" <%= listing.category === 'Camping' ? 'selected' : '' %>>Camping</option>
+                        <option value="Farms" <%= listing.category === 'Farms' ? 'selected' : '' %>>Farms</option>
+                        <option value="Arctic" <%= listing.category === 'Arctic' ? 'selected' : '' %>>Arctic</option>
+                        <option value="Domes" <%= listing.category === 'Domes' ? 'selected' : '' %>>Domes</option>
+                        <option value="Boats" <%= listing.category === 'Boats' ? 'selected' : '' %>>Boats</option>
+                        <option value="Luxe" <%= listing.category === 'Luxe' ? 'selected' : '' %>>Luxe</option>
+                        <option value="Design" <%= listing.category === 'Design' ? 'selected' : '' %>>Design</option>
+                        <option value="Tropical" <%= listing.category === 'Tropical' ? 'selected' : '' %>>Tropical</option>
+                        <option value="Historical" <%= listing.category === 'Historical' ? 'selected' : '' %>>Historical</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="price" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Price per Night</label>
+                    <div class="relative">
+                        <span class="absolute left-5 top-3.5 text-gray-500 dark:text-gray-400">₹</span>
+                        <input name="listing[price]" value="<%= listing.price %>" type="number" class="w-full pl-10 pr-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required />
+                    </div>
+                </div>
+                <div>
+                    <label for="country" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Country</label>
+                    <input name="listing[country]" value="<%= listing.country %>" type="text" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required />
+                </div>
+            </div>
+
+            <div>
+                <label for="location" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Location</label>
+                <input name="listing[location]" value="<%= listing.location %>" type="text" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required />
+            </div>
+
+            <button class="w-full bg-gray-900 dark:bg-primary text-white py-4 rounded-2xl font-bold text-lg hover:bg-black dark:hover:bg-primaryHover transition-all shadow-lg transform active:scale-[0.98] mt-4">Save Changes</button>
+        </form>
+    </div>
+</div>

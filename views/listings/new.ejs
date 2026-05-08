@@ -1,0 +1,113 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="max-w-2xl mx-auto mt-8 mb-20 px-4">
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Create New Listing</h2>
+        <p class="text-gray-500 dark:text-gray-400 mb-8 font-medium">Share your amazing place with the world.</p>
+        
+        <form method="POST" action="/listings" novalidate class="needs-validation space-y-6" enctype="multipart/form-data">
+            <div>
+                <label for="title" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                <input name="listing[title]" placeholder="Enter a catchy title" type="text" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required />
+                <div class="invalid-feedback text-xs mt-1">Title is required.</div>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="description" class="block text-sm font-bold text-gray-700 dark:text-gray-300">Description</label>
+                    <button type="button" id="ai-gen-btn" class="text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primaryHover flex items-center space-x-1.5 transition-colors">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Generate with AI</span>
+                    </button>
+                </div>
+                <textarea name="listing[description]" id="description-box" placeholder="Describe your place..." class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all h-32 dark:text-white" required></textarea>
+                <div class="invalid-feedback text-xs mt-1">Please enter a short description.</div>
+            </div>
+
+            <script>
+                document.getElementById('ai-gen-btn').addEventListener('click', async function() {
+                    const title = document.querySelector('input[name="listing[title]"]').value;
+                    if(!title) {
+                        alert("Please enter a title first so AI knows what to write about!");
+                        return;
+                    }
+                    
+                    const btn = this;
+                    const originalContent = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i><span>AI is writing...</span>';
+
+                    try {
+                        const response = await fetch('/listings/generate-description', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ title })
+                        });
+                        const data = await response.json();
+                        if(data.description) {
+                            document.getElementById('description-box').value = data.description;
+                        } else {
+                            alert(data.error || "AI failed to generate. Try again.");
+                        }
+                    } catch (err) {
+                        alert("Connection error. Check your internet.");
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = originalContent;
+                    }
+                });
+            </script>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="image" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Upload Image</label>
+                    <input name="listing[image]" type="file" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primaryHover dark:text-gray-400" required />
+                </div>
+                <div>
+                    <label for="category" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                    <select name="listing[category]" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white">
+                        <option value="Trending">Trending</option>
+                        <option value="Rooms">Rooms</option>
+                        <option value="Iconic Cities">Iconic Cities</option>
+                        <option value="Mountains">Mountains</option>
+                        <option value="Castles">Castles</option>
+                        <option value="Amazing Pools">Amazing Pools</option>
+                        <option value="Camping">Camping</option>
+                        <option value="Farms">Farms</option>
+                        <option value="Arctic">Arctic</option>
+                        <option value="Domes">Domes</option>
+                        <option value="Boats">Boats</option>
+                        <option value="Luxe">Luxe</option>
+                        <option value="Design">Design</option>
+                        <option value="Tropical">Tropical</option>
+                        <option value="Historical">Historical</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="price" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Price per Night</label>
+                    <div class="relative">
+                        <span class="absolute left-5 top-3.5 text-gray-500 dark:text-gray-400">₹</span>
+                        <input name="listing[price]" placeholder="1200" type="number" class="w-full pl-10 pr-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required />
+                    </div>
+                    <div class="invalid-feedback text-xs mt-1">Price should be valid.</div>
+                </div>
+                <div>
+                    <label for="country" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Country</label>
+                    <input name="listing[country]" placeholder="India" type="text" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required />
+                    <div class="invalid-feedback text-xs mt-1">Country is required.</div>
+                </div>
+            </div>
+
+            <div>
+                <label for="location" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Location</label>
+                <input name="listing[location]" placeholder="Jaipur, Rajasthan" type="text" class="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required />
+                <div class="invalid-feedback text-xs mt-1">Location is required.</div>
+            </div>
+
+            <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg hover:bg-primaryHover transition-all shadow-lg shadow-primary/20 transform active:scale-[0.98] mt-4">Create Listing</button>
+        </form>
+    </div>
+</div>

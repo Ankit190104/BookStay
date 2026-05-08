@@ -1,0 +1,64 @@
+<% for(let listing of allListings) { %>
+<a href="/listings/<%= listing._id %>" class="group no-underline text-black dark:text-white animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div class="flex flex-col space-y-4">
+        <!-- Image Container -->
+        <div class="relative overflow-hidden rounded-[2rem] aspect-square shadow-md group-hover:shadow-2xl transition-all duration-500">
+            <img src="<%= listing.image.url %>" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out" alt="<%= listing.title %>">
+            
+            <!-- Glass Overlay on Hover -->
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500"></div>
+
+            <% 
+                let sum = 0;
+                for (let review of listing.reviews) { sum += review.rating; }
+                let avg = listing.reviews.length > 0 ? (sum / listing.reviews.length) : 0;
+                if (avg >= 4.5 && listing.reviews.length >= 3) { 
+            %>
+                <div class="absolute top-4 left-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md px-4 py-1.5 rounded-full shadow-xl flex items-center space-x-2 border border-gray-100 dark:border-gray-800 z-10">
+                    <i class="fa-solid fa-crown text-yellow-500 text-[10px]"></i>
+                    <span class="text-[10px] font-bold text-gray-800 dark:text-white uppercase tracking-widest">Guest Favorite</span>
+                </div>
+            <% } %>
+
+            <div class="absolute top-4 right-4 z-10">
+                <button onclick="toggleWishlist(event, '<%= listing._id %>')" class="wishlist-btn p-2.5 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-md border border-white/30 transition-all active:scale-90" data-id="<%= listing._id %>">
+                    <% if(currUser && currUser.wishlist && currUser.wishlist.some(wishlistId => wishlistId.toString() === listing._id.toString())) { %>
+                        <i class="fa-solid fa-heart text-xl text-primary wishlist-icon"></i>
+                    <% } else { %>
+                        <i class="fa-regular fa-heart text-xl text-white wishlist-icon"></i>
+                    <% } %>
+                </button>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="px-1">
+            <div class="flex justify-between items-start mb-1">
+                <h3 class="font-bold text-base sm:text-lg truncate max-w-[80%] dark:text-gray-100 group-hover:text-primary transition-colors"><%= listing.title %></h3>
+                <div class="flex items-center space-x-1.5 bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded-lg border border-gray-100 dark:border-gray-700">
+                    <i class="fa-solid fa-star text-[10px] text-yellow-400"></i>
+                    <span class="text-sm font-bold dark:text-gray-200">
+                        <%= listing.reviews.length > 0 ? (listing.reviews.reduce((s, r) => s + r.rating, 0) / listing.reviews.length).toFixed(1) : 'New' %>
+                    </span>
+                </div>
+            </div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium"><%= listing.location %>, <%= listing.country %></p>
+            <div class="mt-2 flex items-baseline">
+                <span class="font-bold text-lg dark:text-white">&#8377; <%= listing.price.toLocaleString("en-IN") %></span>
+                <span class="text-gray-500 dark:text-gray-400 text-sm ml-1.5 font-medium">night</span>
+                <span class="tax-info hidden text-xs text-primary font-bold ml-auto bg-primary/10 px-2 py-0.5 rounded-md">Total incl. GST</span>
+            </div>
+        </div>
+    </div>
+</a>
+<% } %>
+
+<% if (allListings.length === 0) { %>
+    <div class="col-span-full py-20 text-center">
+        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-magnifying-glass text-2xl text-gray-400"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white">No listings found</h3>
+        <p class="text-gray-500 dark:text-gray-400">Try adjusting your search or filters.</p>
+    </div>
+<% } %>

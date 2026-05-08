@@ -1,0 +1,508 @@
+<% layout("/layouts/boilerplate") %>
+<div id="listing-data" data-token="<%= process.env.MAP_TOKEN %>" data-listing='<%- JSON.stringify(listing) %>'></div>
+
+
+<div class="max-w-6xl mx-auto mt-4 sm:mt-8 mb-12 px-2 sm:px-4 pb-32 transition-colors duration-300">
+  <div class="mb-4 sm:mb-6 flex justify-between items-start sm:items-center">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white leading-tight"><%= listing.title %></h1>
+    <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+      <button onclick="shareListing()" class="flex items-center space-x-2 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm">
+        <i class="fa-solid fa-arrow-up-from-bracket text-sm sm:text-base"></i>
+        <span class="hidden sm:inline text-sm font-bold">Share</span>
+      </button>
+      <button onclick="toggleWishlist(event, '<%= listing._id %>')" class="flex items-center space-x-2 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm" data-id="<%= listing._id %>">
+        <% if(currUser && currUser.wishlist && currUser.wishlist.some(wishlistId => wishlistId.toString() === listing._id.toString())) { %>
+            <i class="fa-solid fa-heart text-primary text-sm sm:text-base wishlist-icon"></i>
+            <span class="hidden sm:inline text-sm font-bold wishlist-text">Saved</span>
+        <% } else { %>
+            <i class="fa-regular fa-heart text-sm sm:text-base wishlist-icon"></i>
+            <span class="hidden sm:inline text-sm font-bold wishlist-text">Save</span>
+        <% } %>
+      </button>
+    </div>
+  </div>
+
+  <!-- Image Section -->
+  <div class="relative w-full h-[45vh] sm:h-[55vh] lg:h-[65vh] overflow-hidden rounded-[2.5rem] shadow-2xl mb-12 group">
+    <img src="<%= listing.image.url %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s] ease-out" alt="listing_image">
+    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+    
+    <!-- Guest Favorite Badge -->
+    <div class="absolute top-8 left-8 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md px-5 py-2.5 rounded-2xl shadow-2xl flex items-center space-x-3 border border-gray-100 dark:border-gray-800 animate-in zoom-in duration-500">
+        <div class="w-8 h-8 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-trophy text-sm"></i>
+        </div>
+        <div class="flex flex-col">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Guest Favorite</span>
+            <span class="text-xs font-bold text-gray-800 dark:text-white mt-0.5">Top 5% of homes</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+    <div class="lg:col-span-8">
+      <div class="flex items-center justify-between pb-8 border-b border-gray-100 dark:border-gray-800">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold dark:text-gray-100">Entire place hosted by <%= listing.owner ? listing.owner.username : "Unknown User" %></h2>
+          <p class="text-gray-500 dark:text-gray-400 mt-1 font-medium">10 guests · 4 bedrooms · 6 beds · 3 bathrooms</p>
+        </div>
+        <div class="relative group">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-1 bg-gradient-to-tr from-primary to-purple-500 shadow-lg">
+                <div class="w-full h-full bg-white dark:bg-gray-900 rounded-full flex items-center justify-center overflow-hidden">
+                    <% if (listing.owner && listing.owner.image && listing.owner.image.url) { %>
+                        <img src="<%= listing.owner.image.url %>" class="w-full h-full object-cover" alt="">
+                    <% } else { %>
+                        <i class="fa-solid fa-user text-2xl text-gray-300"></i>
+                    <% } %>
+                </div>
+            </div>
+            <div class="absolute -bottom-1 -right-1 bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-900">
+                <i class="fa-solid fa-check text-[10px]"></i>
+            </div>
+        </div>
+      </div>
+
+      <!-- Feature Highlights -->
+      <div class="py-10 space-y-8 border-b border-gray-100 dark:border-gray-800">
+          <div class="flex space-x-6 items-start">
+              <i class="fa-solid fa-door-open text-2xl text-gray-400 mt-1"></i>
+              <div>
+                  <h4 class="font-bold text-gray-800 dark:text-gray-200">Self check-in</h4>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Check yourself in with the smartlock.</p>
+              </div>
+          </div>
+          <div class="flex space-x-6 items-start">
+              <i class="fa-solid fa-medal text-2xl text-gray-400 mt-1"></i>
+              <div>
+                  <h4 class="font-bold text-gray-800 dark:text-gray-200"><%= listing.owner ? listing.owner.username : "Host" %> is a Superhost</h4>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Superhosts are experienced, highly rated hosts.</p>
+              </div>
+          </div>
+          <div class="flex space-x-6 items-start">
+              <i class="fa-solid fa-calendar-xmark text-2xl text-gray-400 mt-1"></i>
+              <div>
+                  <h4 class="font-bold text-gray-800 dark:text-gray-200">Free cancellation for 48 hours</h4>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Cancel before check-in for a full refund.</p>
+              </div>
+          </div>
+      </div>
+
+      <!-- Description -->
+      <div class="py-10 border-b border-gray-100 dark:border-gray-800">
+        <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg whitespace-pre-line"><%= listing.description %></p>
+      </div>
+
+      <!-- Amenities Section -->
+      <div class="py-10 border-b border-gray-100 dark:border-gray-800">
+        <h3 class="text-xl font-bold mb-8 dark:text-white">What this place offers</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-12">
+            <div class="flex items-center space-x-5 text-gray-600 dark:text-gray-300">
+                <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-xl"><i class="fa-solid fa-mountain-sun"></i></div>
+                <span class="font-medium">Mountain view</span>
+            </div>
+            <div class="flex items-center space-x-5 text-gray-600 dark:text-gray-300">
+                <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-xl"><i class="fa-solid fa-wifi"></i></div>
+                <span class="font-medium">Fast wifi – 50 Mbps</span>
+            </div>
+            <div class="flex items-center space-x-5 text-gray-600 dark:text-gray-300">
+                <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-xl"><i class="fa-solid fa-car"></i></div>
+                <span class="font-medium">Free parking</span>
+            </div>
+            <div class="flex items-center space-x-5 text-gray-600 dark:text-gray-300">
+                <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-xl"><i class="fa-solid fa-snowflake"></i></div>
+                <span class="font-medium">Air conditioning</span>
+            </div>
+        </div>
+        <button class="mt-10 px-8 py-3.5 border-2 border-gray-800 dark:border-gray-600 rounded-2xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all dark:text-white active:scale-95">
+            Show all 32 amenities
+        </button>
+      </div>
+
+      <% if(currUser && listing.owner && listing.owner._id.equals(currUser._id)){ %>
+      <div class="flex flex-wrap gap-4 py-10">
+        <a href="/listings/<%= listing._id %>/edit" class="bg-gray-900 dark:bg-gray-700 text-white px-10 py-3.5 rounded-2xl font-bold hover:bg-black dark:hover:bg-gray-600 transition-all no-underline text-center flex-1 sm:flex-none">Edit Details</a>
+        <form method="POST" action="/listings/<%=listing._id%>?_method=DELETE" class="flex-1 sm:flex-none">
+          <button class="w-full bg-primary/10 text-primary border-2 border-primary/20 px-10 py-3.5 rounded-2xl font-bold hover:bg-primary/20 transition-all">Delete Listing</button>
+        </form>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Booking Card -->
+    <div class="lg:col-span-4 relative">
+      <% if(!currUser || (listing.owner && !listing.owner._id.equals(currUser._id))) { %>
+      <div class="lg:sticky lg:top-28 p-8 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] shadow-2xl bg-white dark:bg-gray-900 transition-all duration-500 hover:shadow-primary/5">
+        <div class="flex justify-between items-center mb-8">
+          <div>
+            <p class="text-2xl font-bold dark:text-white">&#8377; <span id="price-per-night" class="text-3xl"><%= listing.price.toLocaleString("en-IN") %></span> <span class="text-base font-medium text-gray-500">night</span></p>
+          </div>
+          <div class="flex items-center space-x-1.5 bg-gray-50 dark:bg-gray-800 px-3 py-1 rounded-xl border border-gray-100 dark:border-gray-700">
+            <i class="fa-solid fa-star text-xs text-yellow-400"></i>
+            <span class="font-bold text-sm dark:text-gray-300">New</span>
+          </div>
+        </div>
+        
+        <form action="/listings/<%= listing._id %>/book" method="POST" class="space-y-4">
+          <div class="border-2 border-gray-100 dark:border-gray-800 rounded-3xl overflow-hidden focus-within:border-primary/50 transition-all">
+            <div class="grid grid-cols-2 border-b-2 border-gray-100 dark:border-gray-800">
+              <div class="p-4 border-r-2 border-gray-100 dark:border-gray-800 group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all">
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Check-in</label>
+                <input type="date" name="checkIn" class="w-full text-sm font-bold outline-none bg-transparent dark:text-white" id="check-in" required>
+              </div>
+              <div class="p-4 group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all">
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Checkout</label>
+                <input type="date" name="checkOut" class="w-full text-sm font-bold outline-none bg-transparent dark:text-white" id="check-out" required>
+              </div>
+            </div>
+            <div class="p-4 group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all">
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Guests</label>
+              <select name="guests" class="w-full text-sm font-bold outline-none bg-transparent dark:text-white appearance-none cursor-pointer">
+                <option value="1">1 guest</option>
+                <option value="2">2 guests</option>
+                <option value="3">3 guests</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="book-btn" type="submit" class="w-full bg-gradient-to-r from-primary to-primaryHover text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-primary/20 hover:shadow-2xl transition-all transform active:scale-[0.98] mt-2">Reserve Now</button>
+        </form>
+        
+        <p class="text-center text-gray-500 text-sm mt-6 mb-8 font-medium italic">You won't be charged yet</p>
+
+        <div id="price-breakdown" class="space-y-4 hidden animate-in fade-in slide-in-from-top-2 duration-500">
+          <div class="flex justify-between text-gray-600 dark:text-gray-400">
+            <span class="underline decoration-gray-300">₹<%= listing.price.toLocaleString("en-IN") %> x <span id="num-nights">0</span> nights</span>
+            <span class="font-bold">₹<span id="base-total">0</span></span>
+          </div>
+          <div class="flex justify-between text-gray-600 dark:text-gray-400">
+            <span class="underline decoration-gray-300">Cleaning fee</span>
+            <span class="font-bold">₹500</span>
+          </div>
+          <div class="flex justify-between text-gray-600 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-5">
+            <span class="underline decoration-gray-300">Service fee</span>
+            <span class="font-bold">₹1,200</span>
+          </div>
+          <div class="flex justify-between text-xl font-bold pt-2 dark:text-white">
+            <span>Total</span>
+            <span>₹<span id="final-total">0</span></span>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Review Section -->
+  <div class="py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800 mt-12">
+    <% if (currUser) { %>
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-[2rem] shadow-xl border border-gray-100 dark:border-gray-700 mb-12 sm:mb-16">
+        <h4 class="text-xl font-bold text-gray-800 dark:text-white mb-6">Leave a Review</h4>
+        <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation space-y-6" enctype="multipart/form-data">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Rating</label>
+                <fieldset class="starability-slot">
+                    <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                    <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                    <label for="first-rate1" title="Terrible">1 star</label>
+                    <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                    <label for="first-rate2" title="Not good">2 stars</label>
+                    <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                    <label for="first-rate3" title="Average">3 stars</label>
+                    <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                    <label for="first-rate4" title="Very good">4 stars</label>
+                    <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                    <label for="first-rate5" title="Amazing">5 stars</label>
+                </fieldset>
+            </div>
+            <div>
+                <label for="comment" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Comments</label>
+                <textarea name="review[comment]" id="comment" cols="30" rows="5" class="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white" required placeholder="Share your experience..."></textarea>
+                <div class="invalid-feedback">Please add some comments for review</div>
+            </div>
+            <div>
+                <label for="review-img" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Upload Photo (Optional)</label>
+                <input type="file" name="review[image]" id="review-img" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white">
+            </div>
+            <button class="bg-gray-900 dark:bg-gray-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition-all shadow-lg active:scale-95">Submit Review</button>
+        </form>
+    </div>
+    <% } %>
+
+    <% if(listing.reviews.length > 0) { %>
+    <div class="mb-12">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 sm:mb-10 gap-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white flex items-center">
+                <i class="fa-solid fa-star mr-3 text-yellow-400"></i> What guests are saying
+            </h3>
+            
+            <% if(listing.reviews.length >= 2) { %>
+            <button id="summarize-btn" class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all transform active:scale-95">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Summarize with AI</span>
+            </button>
+            <% } %>
+        </div>
+
+        <!-- AI Summary Container -->
+        <div id="ai-summary-box" class="hidden mb-12 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div class="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/10 dark:to-indigo-900/10 p-6 sm:p-8 rounded-[2rem] border border-purple-100 dark:border-purple-800/30 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-32 h-32 bg-purple-200/30 dark:bg-purple-800/10 rounded-full blur-3xl"></div>
+                <div class="flex items-start space-x-4">
+                    <div class="w-10 h-10 bg-purple-600 text-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-800 dark:text-white mb-2">AI Review Insights</h4>
+                        <div id="ai-summary-content" class="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed space-y-2">
+                            <!-- AI Content goes here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <% for(let review of listing.reviews) { %>
+            <div class="p-6 sm:p-8 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all duration-300 group">
+                <div class="flex items-center justify-between mb-4 sm:mb-6">
+                    <div class="flex items-center space-x-3 sm:space-x-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm sm:text-lg">
+                            <%= review.author.username.charAt(0).toUpperCase() %>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 dark:text-gray-200 text-sm sm:text-base">@<%= review.author.username %></p>
+                            <p class="text-[10px] sm:text-xs text-gray-400 font-medium">Verified Guest</p>
+                        </div>
+                    </div>
+                    <p class="starability-result scale-75 origin-right" data-rating="<%= review.rating %>"></p>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-400 text-sm sm:text-base leading-relaxed italic mb-4">"<%= review.comment %>"</p>
+
+                <% if(review.image && review.image.url) { %>
+                    <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 shadow-md">
+                        <img src="<%= review.image.url %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Review photo">
+                    </div>
+                <% } %>
+                
+                <% if(currUser && review.author._id.equals(currUser._id)) { %>
+                <div class="pt-4 border-t border-gray-50 dark:border-gray-800 flex justify-end">
+                    <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                        <button class="flex items-center text-xs sm:text-sm font-bold text-gray-400 hover:text-red-500 transition-colors">
+                            <i class="fa-solid fa-trash-can mr-2"></i> Delete
+                        </button>
+                    </form>
+                </div>
+                <% } %>
+            </div>
+            <% } %>
+        </div>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Map Section Container -->
+  <div class="py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800 mb-10">
+    <div class="flex flex-col space-y-1 mb-6 sm:mb-8">
+      <h3 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Where you'll be</h3>
+      <p class="text-gray-500 dark:text-gray-400 font-medium text-sm sm:text-base"><i class="fa-solid fa-map-location-dot mr-2"></i> <%= listing.location %>, <%= listing.country %></p>
+    </div>
+    <div class="relative group">
+      <div id="map" class="w-full h-[350px] sm:h-[500px] rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl border-2 sm:border-4 border-white dark:border-gray-800 transition-colors duration-500"></div>
+      <div class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md px-4 py-2 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl shadow-xl border border-white/50 dark:border-gray-700 pointer-events-none">
+        <p class="text-[10px] sm:text-sm font-bold text-gray-800 dark:text-white">Exact location provided after booking</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Chat Bubble -->
+<div id="ai-chat-container" style="position: fixed; bottom: 100px; right: 30px; z-index: 99999; font-family: sans-serif;">
+    <!-- Chat Window -->
+    <div id="chat-window" style="display: none; background: white; width: 350px; height: 500px; border-radius: 20px; box-shadow: 0 10px 50px rgba(0,0,0,0.2); flex-direction: column; overflow: hidden; margin-bottom: 15px; border: 1px solid #eee;">
+        <!-- Header -->
+        <div style="background: #ff385c; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-robot" style="font-size: 20px;"></i>
+                <div>
+                    <div style="font-weight: bold; font-size: 14px;">WanderLust AI</div>
+                    <div style="font-size: 10px; opacity: 0.8;">Online & Ready</div>
+                </div>
+            </div>
+            <button id="close-chat" style="background: none; border: none; color: white; cursor: pointer; font-size: 20px;">&times;</button>
+        </div>
+        
+        <!-- Messages Area -->
+        <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 15px; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: white; color: #333; padding: 10px 15px; border-radius: 15px; border-bottom-left-radius: 2px; font-size: 13px; max-width: 85%; align-self: flex-start; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                Hi! How can I help you with <b><%= listing.title %></b> today?
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div style="padding: 15px; border-top: 1px solid #eee; background: white;">
+            <form id="chat-form" style="display: flex; gap: 10px;">
+                <input type="text" id="chat-input" placeholder="Type a message..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 10px; outline: none; font-size: 13px;">
+                <button type="submit" style="background: #ff385c; color: white; border: none; width: 40px; height: 40px; border-radius: 10px; cursor: pointer;">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button id="chat-toggle" style="background: #ff385c; width: 60px; height: 60px; border-radius: 50%; border: none; color: white; cursor: pointer; box-shadow: 0 5px 20px rgba(255,56,92,0.4); display: flex; align-items: center; justify-content: center; transition: 0.3s;">
+        <i class="fa-solid fa-robot" style="font-size: 25px;"></i>
+    </button>
+</div>
+
+<script>
+    const listingData = document.getElementById('listing-data');
+    const mapToken = listingData.dataset.token;
+    const listing = JSON.parse(listingData.dataset.listing);
+</script>
+<script src="/js/map.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('chat-toggle');
+        const windowEl = document.getElementById('chat-window');
+        const close = document.getElementById('close-chat');
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('chat-input');
+        const messages = document.getElementById('chat-messages');
+
+        toggle.onclick = () => {
+            windowEl.style.display = windowEl.style.display === 'none' ? 'flex' : 'none';
+            input.focus();
+            messages.scrollTop = messages.scrollHeight;
+        };
+
+        close.onclick = () => windowEl.style.display = 'none';
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if(!text) return;
+
+            // 1. Show User Message
+            addMsg(text, 'user');
+            input.value = '';
+
+            // 2. Show Typing
+            const typingId = 'typing-' + Date.now();
+            addMsg('...', 'ai', typingId);
+
+            try {
+                const res = await fetch(`/listings/${window.location.pathname.split('/')[2]}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+                
+                document.getElementById(typingId).remove();
+                addMsg(data.reply || "No response", 'ai');
+            } catch (err) {
+                document.getElementById(typingId).innerText = "Error!";
+            }
+        };
+
+        function addMsg(text, sender, id = '') {
+            const div = document.createElement('div');
+            div.style.padding = '10px 15px';
+            div.style.borderRadius = '15px';
+            div.style.fontSize = '13px';
+            div.style.maxWidth = '85%';
+            div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+            
+            if(sender === 'user') {
+                div.style.background = '#ff385c';
+                div.style.color = 'white';
+                div.style.alignSelf = 'flex-end';
+                div.style.borderBottomRightRadius = '2px';
+            } else {
+                div.style.background = '#eee';
+                div.style.color = '#333';
+                div.style.alignSelf = 'flex-start';
+                div.style.borderBottomLeftRadius = '2px';
+            }
+            
+            if(id) div.id = id;
+            div.innerText = text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // AI Review Summarization
+        const summarizeBtn = document.getElementById('summarize-btn');
+        if (summarizeBtn) {
+            summarizeBtn.onclick = async () => {
+                const box = document.getElementById('ai-summary-box');
+                const content = document.getElementById('ai-summary-content');
+                
+                summarizeBtn.disabled = true;
+                summarizeBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Analyzing...</span>';
+                
+                try {
+                    const res = await fetch(`/listings/${window.location.pathname.split('/')[2]}/summarize-reviews`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+                    
+                    if (data.summary) {
+                        box.classList.remove('hidden');
+                        // Simple markdown-ish conversion for bullet points
+                        content.innerHTML = data.summary
+                            .split('\n')
+                            .filter(line => line.trim())
+                            .map(line => `<p class="mb-2">${line.replace(/^[*-]\s*/, '• ')}</p>`)
+                            .join('');
+                        
+                        summarizeBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Summary Generated</span>';
+                        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        throw new Error(data.error || "Failed to generate summary");
+                    }
+                } catch (err) {
+                    alert(err.message);
+                    summarizeBtn.disabled = false;
+                    summarizeBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> <span>Summarize with AI</span>';
+                }
+            };
+        // Booking Price Calculation
+        const checkInInput = document.getElementById('check-in');
+        const checkOutInput = document.getElementById('check-out');
+        const priceBreakdown = document.getElementById('price-breakdown');
+        const numNightsSpan = document.getElementById('num-nights');
+        const baseTotalSpan = document.getElementById('base-total');
+        const finalTotalSpan = document.getElementById('final-total');
+        const pricePerNight = <%= listing.price %>;
+
+        function updatePrice() {
+            const checkIn = new Date(checkInInput.value);
+            const checkOut = new Date(checkOutInput.value);
+
+            if (checkIn && checkOut && checkOut > checkIn) {
+                const diffTime = Math.abs(checkOut - checkIn);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                numNightsSpan.innerText = diffDays;
+                const baseTotal = pricePerNight * diffDays;
+                baseTotalSpan.innerText = baseTotal.toLocaleString('en-IN');
+                finalTotalSpan.innerText = (baseTotal + 500 + 1200).toLocaleString('en-IN');
+                
+                priceBreakdown.classList.remove('hidden');
+            } else {
+                priceBreakdown.classList.add('hidden');
+            }
+        }
+
+        if(checkInInput && checkOutInput) {
+            checkInInput.addEventListener('change', updatePrice);
+            checkOutInput.addEventListener('change', updatePrice);
+        }
+    });
+</script>

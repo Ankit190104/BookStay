@@ -1,0 +1,49 @@
+<% if(success && success.length) { %>
+    <div id="flash-success" class="fixed top-24 left-1/2 -translate-x-1/2 z-[10000] animate-in slide-in-from-top duration-500">
+        <div class="bg-white dark:bg-gray-800 border-l-4 border-green-500 shadow-2xl rounded-2xl px-6 py-4 flex items-center space-x-4 min-w-[320px] max-w-md">
+            <div class="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-600">
+                <i class="fa-solid fa-circle-check text-xl"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-gray-800 dark:text-white"><%= success %></p>
+            </div>
+            <button onclick="document.getElementById('flash-success').remove()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('flash-success');
+            if(el) {
+                el.classList.add('animate-out', 'fade-out', 'slide-out-to-top');
+                setTimeout(() => el.remove(), 500);
+            }
+        }, 5000);
+    </script>
+<% } %>
+
+<% if(error && error.length) { %>
+    <div id="flash-error" class="fixed top-24 left-1/2 -translate-x-1/2 z-[10000] animate-in slide-in-from-top duration-500">
+        <div class="bg-white dark:bg-gray-800 border-l-4 border-red-500 shadow-2xl rounded-2xl px-6 py-4 flex items-center space-x-4 min-w-[320px] max-w-md">
+            <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600">
+                <i class="fa-solid fa-circle-exclamation text-xl"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-gray-800 dark:text-white"><%= error %></p>
+            </div>
+            <button onclick="document.getElementById('flash-error').remove()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('flash-error');
+            if(el) {
+                el.classList.add('animate-out', 'fade-out', 'slide-out-to-top');
+                setTimeout(() => el.remove(), 500);
+            }
+        }, 5000);
+    </script>
+<% } %>

@@ -1,0 +1,299 @@
+<% layout("/layouts/boilerplate") %>
+
+<!-- Filters Section -->
+<div id="filters-container" class="sticky top-[72px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl z-40 border-b border-gray-100 dark:border-gray-800 transition-all duration-300">
+    <div class="max-w-7xl mx-auto flex items-center px-4 relative group/filters h-20 sm:h-24">
+        <!-- Scroll Buttons -->
+        <button id="scroll-left" class="absolute left-4 z-10 w-7 h-7 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/filters:opacity-100 transition-opacity hidden lg:flex hover:scale-110 active:scale-95">
+            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+        </button>
+
+        <div id="filters" class="flex items-center space-x-6 sm:space-x-10 overflow-x-auto h-full scrollbar-hide flex-1 relative scroll-smooth">
+            <% 
+                const categories = [
+                    { name: "All", icon: "fa-solid fa-border-all" },
+                    { name: "Trending", icon: "fa-solid fa-fire" },
+                    { name: "Rooms", icon: "fa-solid fa-bed" },
+                    { name: "Iconic Cities", icon: "fa-solid fa-mountain-city", label: "Cities" },
+                    { name: "Mountains", icon: "fa-solid fa-mountain" },
+                    { name: "Castles", icon: "fa-brands fa-fort-awesome" },
+                    { name: "Amazing Pools", icon: "fa-solid fa-person-swimming", label: "Pools" },
+                    { name: "Camping", icon: "fa-solid fa-campground" },
+                    { name: "Luxe", icon: "fa-solid fa-gem" },
+                    { name: "Farms", icon: "fa-solid fa-cow" },
+                    { name: "Arctic", icon: "fa-solid fa-snowflake" },
+                    { name: "Tropical", icon: "fa-solid fa-palm-tree" },
+                    { name: "Historical", icon: "fa-solid fa-landmark" }
+                ];
+            %>
+            <% for(let cat of categories) { %>
+                <a href="/listings<%= cat.name === 'All' ? '' : '?category=' + cat.name %>" 
+                   class="category-filter flex flex-col items-center justify-center h-full space-y-1.5 transition-all flex-shrink-0 group no-underline border-b-2 <%= (typeof category !== 'undefined' && category === cat.name) ? 'border-black dark:border-white opacity-100' : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-300' %> text-black dark:text-white px-1" 
+                   data-category="<%= cat.name %>">
+                    <div class="text-[1.2rem] group-hover:scale-110 transition-transform duration-300"><i class="<%= cat.icon %>"></i></div>
+                    <p class="text-[9px] font-bold tracking-tight uppercase whitespace-nowrap"><%= cat.label || cat.name %></p>
+                </a>
+            <% } %>
+        </div>
+
+        <button id="scroll-right" class="absolute right-[210px] z-10 w-7 h-7 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/filters:opacity-100 transition-opacity hidden lg:flex hover:scale-110 active:scale-95">
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+
+        <!-- Spacer for Buttons -->
+        <div class="flex items-center space-x-3 ml-6 flex-shrink-0">
+            <!-- Advanced Filters Button -->
+            <button id="filter-modal-btn" class="flex items-center space-x-2 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all cursor-pointer group/btn">
+                <i class="fa-solid fa-sliders text-[10px] group-hover/btn:rotate-180 transition-transform duration-500"></i>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Filters</span>
+            </button>
+
+            <!-- Tax Toggle -->
+            <div class="hidden md:flex items-center space-x-3 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md hover:border-gray-300 transition-all cursor-pointer">
+                <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tighter">Tax</span>
+                <div class="relative inline-block w-8 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="toggle" id="switchCheckDefault" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 appearance-none cursor-pointer outline-none transition-all duration-300 ease-in-out"/>
+                    <label for="switchCheckDefault" class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Map Toggle -->
+<div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+    <button id="map-toggle-btn" class="flex items-center space-x-3 bg-gray-900 text-white px-6 py-4 rounded-full font-bold shadow-2xl hover:scale-105 active:scale-95 transition-all group">
+        <span id="map-btn-text">Show Map</span>
+        <i id="map-btn-icon" class="fa-solid fa-map group-hover:rotate-12 transition-transform"></i>
+    </button>
+</div>
+
+<!-- Full Map View (Hidden by default) -->
+<div id="full-map-container" class="hidden fixed inset-0 z-40 bg-white dark:bg-gray-900 pt-[140px]">
+    <div id="index-map" class="w-full h-full"></div>
+</div>
+
+<!-- Advanced Filters Modal -->
+<div id="filter-modal" class="fixed inset-0 z-[100] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
+            <h3 class="text-xl font-bold dark:text-white">Filters</h3>
+            <button id="close-filter-modal" class="text-gray-400 hover:text-gray-600 transition-colors">&times;</button>
+        </div>
+        <form action="/listings" method="GET" class="p-8 space-y-8">
+            <% if(category && category !== "All") { %>
+                <input type="hidden" name="category" value="<%= category %>">
+            <% } %>
+            
+            <div>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">Price Range (Per Night)</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <span class="text-[10px] uppercase font-bold text-gray-400">Min Price</span>
+                        <input type="number" name="minPrice" placeholder="₹0" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 dark:text-white">
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[10px] uppercase font-bold text-gray-400">Max Price</span>
+                        <input type="number" name="maxPrice" placeholder="₹50,000+" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 dark:text-white">
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">Minimum Rating</label>
+                <div class="flex space-x-2">
+                    <% for(let i=1; i<=5; i++) { %>
+                        <label class="flex-1 cursor-pointer group">
+                            <input type="radio" name="minRating" value="<%= i %>" class="hidden peer">
+                            <div class="py-3 text-center border-2 border-gray-100 dark:border-gray-700 rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+                                <span class="font-bold dark:text-gray-200"><%= i %>+ <i class="fa-solid fa-star text-yellow-400 text-[10px]"></i></span>
+                            </div>
+                        </label>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="pt-4 flex space-x-4">
+                <a href="/listings" class="flex-1 text-center py-4 rounded-2xl font-bold text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all no-underline">Clear All</a>
+                <button type="submit" class="flex-1 bg-primary text-white py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-primaryHover transition-all active:scale-[0.98]">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Listings Grid -->
+<div id="listings-grid" class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 mt-8">
+    <%- include("listing_grid.ejs") %>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Filter Modal Logic
+        const filterBtn = document.getElementById("filter-modal-btn");
+        const filterModal = document.getElementById("filter-modal");
+        const closeFilter = document.getElementById("close-filter-modal");
+
+        if(filterBtn) {
+            filterBtn.onclick = () => filterModal.classList.remove("hidden");
+        }
+        if(closeFilter) {
+            closeFilter.onclick = () => filterModal.classList.add("hidden");
+        }
+        window.onclick = (e) => {
+            if(e.target === filterModal) filterModal.classList.add("hidden");
+        }
+
+        // Map Toggle Logic
+        const mapToggleBtn = document.getElementById("map-toggle-btn");
+        const fullMapContainer = document.getElementById("full-map-container");
+        const grid = document.getElementById("listings-grid");
+        const mapBtnText = document.getElementById("map-btn-text");
+        const mapBtnIcon = document.getElementById("map-btn-icon");
+        let mapInitialized = false;
+
+        const mapToken = "<%= mapToken %>";
+        const listings = <%- JSON.stringify(allListings) %>;
+
+        mapToggleBtn.onclick = () => {
+            const isMapVisible = !fullMapContainer.classList.contains("hidden");
+            
+            if(isMapVisible) {
+                // Switch to List
+                fullMapContainer.classList.add("hidden");
+                grid.classList.remove("hidden");
+                mapBtnText.innerText = "Show Map";
+                mapBtnIcon.className = "fa-solid fa-map";
+            } else {
+                // Switch to Map
+                fullMapContainer.classList.remove("hidden");
+                grid.classList.add("hidden");
+                mapBtnText.innerText = "Show List";
+                mapBtnIcon.className = "fa-solid fa-list";
+                
+                if(!mapInitialized) {
+                    initMap();
+                    mapInitialized = true;
+                }
+            }
+        };
+
+        function initMap() {
+            mapboxgl.accessToken = mapToken;
+            const map = new mapboxgl.Map({
+                container: 'index-map',
+                style: 'mapbox://styles/mapbox/streets-v12',
+                center: [77.209, 28.6139], // Default center (Delhi)
+                zoom: 4
+            });
+
+            listings.forEach(listing => {
+                if(listing.geometry && listing.geometry.coordinates) {
+                    const el = document.createElement('div');
+                    el.className = 'marker';
+                    el.style.background = '#ff385c';
+                    el.style.width = '35px';
+                    el.style.height = '24px';
+                    el.style.borderRadius = '12px';
+                    el.style.display = 'flex';
+                    el.style.alignItems = 'center';
+                    el.style.justifyContent = 'center';
+                    el.style.color = 'white';
+                    el.style.fontSize = '10px';
+                    el.style.fontWeight = 'bold';
+                    el.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                    el.innerText = '₹' + (listing.price/1000).toFixed(1) + 'k';
+
+                    new mapboxgl.Marker(el)
+                        .setLngLat(listing.geometry.coordinates)
+                        .setPopup(new mapboxgl.Popup({ offset: 25 })
+                            .setHTML(`
+                                <a href="/listings/${listing._id}" class="no-underline">
+                                    <div class="p-2 w-48">
+                                        <img src="${listing.image.url}" class="w-full h-24 object-cover rounded-lg mb-2">
+                                        <h4 class="font-bold text-gray-800 text-sm truncate">${listing.title}</h4>
+                                        <p class="text-xs text-gray-500">${listing.location}</p>
+                                        <p class="font-bold text-sm mt-1">₹${listing.price.toLocaleString()}</p>
+                                    </div>
+                                </a>
+                            `))
+                        .addTo(map);
+                }
+            });
+
+            // Adjust map to fit markers if they exist
+            if(listings.length > 0) {
+                const bounds = new mapboxgl.LngLatBounds();
+                listings.forEach(l => {
+                    if(l.geometry && l.geometry.coordinates) bounds.extend(l.geometry.coordinates);
+                });
+                map.fitBounds(bounds, { padding: 50 });
+            }
+        // Category Scroll Logic
+        const filters = document.getElementById("filters");
+        const scrollLeft = document.getElementById("scroll-left");
+        const scrollRight = document.getElementById("scroll-right");
+
+        if(scrollLeft && scrollRight && filters) {
+            scrollLeft.onclick = () => {
+                filters.scrollBy({ left: -300, behavior: 'smooth' });
+            };
+            scrollRight.onclick = () => {
+                filters.scrollBy({ left: 300, behavior: 'smooth' });
+            };
+
+            // Optional: Hide/Show buttons based on scroll
+            filters.addEventListener('scroll', () => {
+                scrollLeft.style.display = filters.scrollLeft > 0 ? 'flex' : 'none';
+                // Note: right button visibility is trickier without measuring max scroll
+            });
+        }
+    });
+</script>
+
+<style>
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .toggle-checkbox:checked { right: 0; border-color: #ff385c; background-color: #ff385c; }
+    .toggle-checkbox:checked + .toggle-label { background-color: #ff385c; }
+    .toggle-checkbox { right: 50%; }
+</style>
+
+<!-- Floating Show Map Button -->
+<div class="fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 z-[999] transition-all duration-300">
+    <button id="toggle-map-btn" class="bg-gray-900 dark:bg-gray-700 text-white px-6 py-3 rounded-full font-bold shadow-2xl flex items-center space-x-2 hover:scale-105 transition-all transform active:scale-95">
+        <span id="btn-text">Show Map</span>
+        <i id="btn-icon" class="fa-solid fa-map"></i>
+    </button>
+</div>
+
+<!-- Map Container -->
+<div id="map-view" class="hidden w-full h-[calc(100vh-250px)] rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-gray-800 shadow-2xl mb-12 relative animate-in fade-in duration-500">
+    <div id="main-map" class="w-full h-full"></div>
+</div>
+
+<!-- Hidden Map Data -->
+<div id="map-data" data-token="<%= mapToken %>" data-listings='<%- JSON.stringify(allListings) %>'></div>
+
+<script>
+    const mapDataEl = document.getElementById('map-data');
+    const mapToken = mapDataEl.dataset.token;
+    const listingsData = { features: JSON.parse(mapDataEl.dataset.listings) };
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let taxSwitch = document.getElementById("switchCheckDefault");
+        taxSwitch.addEventListener("change", () => {
+            let taxInfo = document.getElementsByClassName("tax-info");
+            for (let info of taxInfo) {
+                if (taxSwitch.checked) {
+                    info.classList.remove("hidden");
+                } else {
+                    info.classList.add("hidden");
+                }
+            }
+        });
+    });
+</script>

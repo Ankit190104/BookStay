@@ -1,0 +1,80 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="max-w-7xl mx-auto px-4 mt-16 mb-24">
+    <div class="mb-16">
+        <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">Sitemap</h1>
+        <p class="text-gray-500 dark:text-gray-400">Explore all the sections and listings available on WanderLust.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <!-- Explorations -->
+        <div class="space-y-6">
+            <h3 class="text-xl font-bold text-primary flex items-center">
+                <i class="fa-solid fa-compass mr-3"></i> Exploration
+            </h3>
+            <ul class="space-y-4">
+                <li><a href="/listings" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">All Listings</a></li>
+                <li><a href="/listings?category=Trending" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Trending Properties</a></li>
+                <li><a href="/listings?category=Luxe" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Luxe Stays</a></li>
+                <li><a href="/planner" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">AI Trip Planner</a></li>
+            </ul>
+        </div>
+
+        <!-- Categories -->
+        <div class="space-y-6">
+            <h3 class="text-xl font-bold text-primary flex items-center">
+                <i class="fa-solid fa-tags mr-3"></i> Categories
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+                <ul class="space-y-4">
+                    <li><a href="/listings?category=Rooms" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Rooms</a></li>
+                    <li><a href="/listings?category=Iconic Cities" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Cities</a></li>
+                    <li><a href="/listings?category=Mountains" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Mountains</a></li>
+                    <li><a href="/listings?category=Castles" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Castles</a></li>
+                </ul>
+                <ul class="space-y-4">
+                    <li><a href="/listings?category=Amazing Pools" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Pools</a></li>
+                    <li><a href="/listings?category=Camping" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Camping</a></li>
+                    <li><a href="/listings?category=Tropical" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Tropical</a></li>
+                    <li><a href="/listings?category=Historical" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Historical</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Account & Management -->
+        <div class="space-y-6">
+            <h3 class="text-xl font-bold text-primary flex items-center">
+                <i class="fa-solid fa-user-gear mr-3"></i> Account
+            </h3>
+            <ul class="space-y-4">
+                <li><a href="/profile" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">My Profile</a></li>
+                <li><a href="/bookings" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">My Bookings</a></li>
+                <li><a href="/wishlist" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Wishlist</a></li>
+                <li><a href="/listings/dashboard" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Host Dashboard</a></li>
+                <li><a href="/listings/new" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Create New Listing</a></li>
+            </ul>
+        </div>
+
+        <!-- Legal & Support -->
+        <div class="space-y-6">
+            <h3 class="text-xl font-bold text-primary flex items-center">
+                <i class="fa-solid fa-circle-info mr-3"></i> Help & Legal
+            </h3>
+            <ul class="space-y-4">
+                <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Help Centre</a></li>
+                <li><a href="/privacy" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Privacy Policy</a></li>
+                <li><a href="/terms" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Terms of Service</a></li>
+                <li><a href="/contact" class="text-gray-600 dark:text-gray-300 hover:text-primary no-underline transition-all font-medium">Contact Support</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Stats or Info Footer -->
+    <div class="mt-20 p-12 bg-gray-50 dark:bg-gray-800 rounded-[3rem] border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="text-center md:text-left">
+            <h4 class="text-2xl font-bold text-gray-800 dark:text-white">Need help navigating?</h4>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Our AI Assistant is also available on every listing page to help you.</p>
+        </div>
+        <a href="/contact" class="bg-primary text-white px-10 py-4 rounded-2xl font-bold shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all no-underline">Contact Us</a>
+    </div>
+</div>

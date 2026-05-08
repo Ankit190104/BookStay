@@ -1,0 +1,48 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="max-w-7xl mx-auto px-4 mt-8 mb-20">
+    <div class="mb-10 border-b border-gray-100 dark:border-gray-800 pb-6">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white">My Wishlist</h2>
+        <p class="text-gray-500 dark:text-gray-400 mt-1">All your favorite places in one place.</p>
+    </div>
+
+    <% if (wishlist && wishlist.length > 0) { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+            <% for(let listing of wishlist) { %>
+            <a href="/listings/<%= listing._id %>" class="group no-underline text-black dark:text-white">
+                <div class="flex flex-col space-y-3">
+                    <div class="relative overflow-hidden rounded-2xl aspect-square">
+                        <img src="<%= listing.image.url %>" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" alt="<%= listing.title %>">
+                        <div class="absolute top-3 right-3 drop-shadow-md">
+                            <form action="/wishlist/<%= listing._id %>" method="POST">
+                                <button type="submit" class="focus:outline-none">
+                                    <i class="fa-solid fa-heart text-2xl text-primary"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-[15px] truncate max-w-[80%] text-gray-800 dark:text-gray-100"><%= listing.title %></h3>
+                        </div>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm"><%= listing.location %>, <%= listing.country %></p>
+                        <div class="mt-1 flex items-center">
+                            <span class="font-bold text-[15px] text-gray-900 dark:text-white">&#8377; <%= listing.price.toLocaleString("en-IN") %></span>
+                            <span class="text-[15px] ml-1 text-gray-700 dark:text-gray-400">night</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="text-center py-24">
+            <div class="w-20 h-20 bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-regular fa-heart text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Create your first wishlist</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-8">As you search, click the heart icon to save your favorite places.</p>
+            <a href="/listings" class="inline-block bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-primaryHover transition-all shadow-lg no-underline">Start exploring</a>
+        </div>
+    <% } %>
+</div>

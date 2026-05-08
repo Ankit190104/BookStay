@@ -1,0 +1,122 @@
+<nav class="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 py-3 transition-colors duration-300">
+  <div class="container mx-auto px-4 flex items-center justify-between relative">
+    <!-- Brand -->
+    <a class="text-primary text-2xl font-bold font-outfit flex items-center no-underline z-50" href="/listings">
+      <i class="fa-solid fa-compass mr-2"></i> BookStay
+    </a>
+    
+    <!-- Desktop Search (Hidden on Mobile) -->
+    <div class="hidden lg:flex items-center flex-1 justify-center max-w-xl mx-auto px-8">
+       <form class="relative w-full flex items-center" action="/listings" method="GET">
+          <input 
+            class="w-full rounded-full py-2 px-6 pr-12 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            type="search"
+            placeholder="Search destinations"
+            name="search"
+          />
+          <button class="absolute right-1.5 bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-primaryHover transition-colors" type="submit">
+            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+          </button>
+       </form>
+    </div>
+
+    <!-- Right Side Menu -->
+    <div class="flex items-center space-x-2 sm:space-x-4 z-50">
+      <!-- Dark Mode Toggle (Always Visible) -->
+      <button id="dark-mode-toggle" class="p-2 sm:p-2.5 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all dark:border-gray-700 dark:hover:bg-gray-800 dark:text-gray-400">
+        <i class="fa-solid fa-moon text-base sm:text-lg dark:hidden"></i>
+        <i class="fa-solid fa-sun text-base sm:text-lg hidden dark:block"></i>
+      </button>
+
+      <a class="hidden sm:block text-gray-700 dark:text-gray-300 hover:text-primary font-medium text-sm transition-colors no-underline" href="/listings/new">Airbnb your home</a>
+      
+      <!-- User Menu Toggle -->
+      <div class="relative">
+        <button id="user-menu-btn" class="flex items-center space-x-2 border border-gray-300 dark:border-gray-700 rounded-full px-3 py-1.5 hover:shadow-md transition-shadow bg-white dark:bg-gray-800">
+          <i class="fa-solid fa-bars text-sm text-gray-600 dark:text-gray-400"></i>
+          <% if (currUser) { %>
+            <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold shadow-sm overflow-hidden select-none">
+              <% if (currUser.image && currUser.image.url && currUser.image.url !== "" && !currUser.image.url.includes("default_user_avatar")) { %>
+                <img src="<%= currUser.image.url %>" class="w-full h-full object-cover" alt="">
+              <% } else { %>
+                <%= currUser.username.charAt(0).toUpperCase() %>
+              <% } %>
+            </div>
+          <% } else { %>
+            <i class="fa-solid fa-circle-user text-2xl text-gray-400 dark:text-gray-500"></i>
+          <% } %>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="user-dropdown" class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 py-2 hidden animate-in fade-in zoom-in duration-200">
+          <!-- Mobile Only Search -->
+          <div class="px-4 py-3 lg:hidden">
+            <form action="/listings" method="GET" class="relative">
+              <input type="text" name="search" placeholder="Search..." class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-lg py-2 px-4 text-sm focus:ring-primary/20 dark:text-white">
+              <button class="absolute right-2 top-2 text-gray-400"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+          </div>
+          
+          <hr class="lg:hidden border-gray-100 dark:border-gray-700">
+          
+          <% if (!currUser) { %>
+            <a class="block px-4 py-3 text-sm font-bold text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 no-underline" href="/signup">Sign Up</a>
+            <a class="block px-4 py-3 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 no-underline" href="/login">Log In</a>
+          <% } %>
+          
+          <% if (currUser) { %>
+            <div class="px-4 py-3 bg-gray-50/50 dark:bg-gray-900/50">
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Account</p>
+              <a href="/profile" class="block group no-underline">
+                <p class="text-sm font-bold text-gray-800 dark:text-gray-200 truncate group-hover:text-primary transition-colors">@<%= currUser.username %></p>
+                <p class="text-[10px] text-gray-400 font-medium">View Profile <i class="fa-solid fa-chevron-right text-[8px] ml-1"></i></p>
+              </a>
+            </div>
+            <hr class="border-gray-100 dark:border-gray-700">
+            <a class="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 no-underline font-semibold" href="/wishlist">
+              <i class="fa-regular fa-heart mr-2"></i> My Wishlist
+            </a>
+            <a class="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 no-underline font-semibold" href="/bookings">
+              <i class="fa-solid fa-suitcase mr-2"></i> My Trips
+            </a>
+            <a class="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 no-underline font-semibold text-primary" href="/planner">
+              <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> AI Trip Planner
+            </a>
+            <% if (currUser.role === "host") { %>
+              <a class="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 no-underline font-bold text-primary" href="/listings/dashboard">
+                <i class="fa-solid fa-chart-line mr-2"></i> Host Dashboard
+              </a>
+            <% } %>
+            <a class="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 no-underline" href="/listings/new">
+              <i class="fa-solid fa-house-chimney-medical mr-2"></i> Airbnb your home
+            </a>
+            <hr class="border-gray-100 dark:border-gray-700">
+            <a class="block px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 no-underline font-medium" href="/logout">
+              <i class="fa-solid fa-right-from-bracket mr-2"></i> Log Out
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("user-menu-btn");
+    const dropdown = document.getElementById("user-dropdown");
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", () => {
+      dropdown.classList.add("hidden");
+    });
+
+    dropdown.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+  });
+</script>
